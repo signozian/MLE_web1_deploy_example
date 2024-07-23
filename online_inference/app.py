@@ -65,7 +65,24 @@ def predict(request: InputData):
     return OutputData(predicted_values=y_pred) # Возвращаем результат
 
 
-# Функция, срабатывающая при ошибке парсинга данных
+@app.get("/is_ready")
+def is_ready():
+    if model_lgbm:
+        status_code = 200
+        msg = "Model is ready"
+    else:
+        status_code = 500
+        msg = "Model is NOT ready"
+    return JSONResponse(
+        status_code=status_code,
+        content=jsonable_encoder({"Message": msg})
+    )
+
+
+
+
+
+# Функция, срабатывающая при ошибке
 # (если данные в post запросе имеют неправильный формат)
 @app.exception_handler(RequestValidationError)
 async def validate_data(
