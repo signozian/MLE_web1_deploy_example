@@ -64,7 +64,7 @@ def predict(request: InputData):
     logger.info(msg=f"Prediction finished. It's OK :) {y_pred}")
     return OutputData(predicted_values=y_pred) # Возвращаем результат
 
-@app.post("/will_it_rain")
+@app.post("/will_it_rain", response_model=OutputData)
 def rain(request: InputData):
     data = get_data(request) # Парсим данные из запроса в DataFrame
     logger.info(msg=f"Data loaded")
@@ -75,11 +75,8 @@ def rain(request: InputData):
             status_code=500,
             detail="Error: something went wrong while prediction")
     logger.info(msg=f"Prediction finished. It's OK :) {y_pred}")
-    is_rain  = 1 if y_pred > 0.6 else 0
-    return JSONResponse(
-        status_code = 200,
-        content = is_rain
-    )
+    is_rain = [1.0 if val > 0.6 else 0.0 for val in y_pred]
+    return OutputData(predicted_values=is_rain)
 # Функция, срабатывающая при ошибке
 # (если данные в post запросе имеют неправильный формат)
 @app.exception_handler(RequestValidationError)
