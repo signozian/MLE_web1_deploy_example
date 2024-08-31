@@ -40,7 +40,7 @@ python -m online_inference.tests
 
 Запустить сервер можно следующей командой:
 ~~~
-uvicorn --app-dir=online_inference app:app --host 127.0.0.1 --port 8000
+uvicorn online_inference.app:app --host 127.0.0.1 --port 8000
 ~~~
 
 Проверить post-запросы можно с помощью скрипта:

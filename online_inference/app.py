@@ -64,6 +64,22 @@ def predict(request: InputData):
     logger.info(msg=f"Prediction finished. It's OK :) {y_pred}")
     return OutputData(predicted_values=y_pred) # Возвращаем результат
 
+@app.post("/will_it_rain")
+def rain(request: InputData):
+    data = get_data(request) # Парсим данные из запроса в DataFrame
+    logger.info(msg=f"Data loaded")
+    try:
+        y_pred = model_lgbm.predict_proba(data)[:, 1] # Получаем предикт
+    except Exception as e:
+        raise HTTPException( # Если что-то идёт не так, выдаём ошибку и код 500
+            status_code=500,
+            detail="Error: something went wrong while prediction")
+    logger.info(msg=f"Prediction finished. It's OK :) {y_pred}")
+    is_rain  = 1 if y_pred > 0.6 else 0
+    return JSONResponse(
+        status_code = 200,
+        content = is_rain
+    )
 # Функция, срабатывающая при ошибке
 # (если данные в post запросе имеют неправильный формат)
 @app.exception_handler(RequestValidationError)
